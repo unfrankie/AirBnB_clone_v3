@@ -13,7 +13,7 @@ app.register_blueprint(app_views)
 @app.teardown_appcontext
 def teardown_db(exception):
   """ teardown """
-  storage.close()
+     storage.close()
 
 if __name__ == "__main__":
     host = os.getenv('HBNB_API_HOST', '0.0.0.0')
