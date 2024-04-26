@@ -3,12 +3,12 @@
 
 from flask import jsonify
 from api.v1.views import app_views
+from models import storage
 
 
 @app_views.route('/status', methods=['GET'], strict_slashes=False)
 def api_status():
     """api status"""
-    jsonify({"status": "OK"}).status_code = 200
     return jsonify({"status": "OK"})
 
 
@@ -23,5 +23,4 @@ def obj_count():
         "State": storage.count("State"),
         "User": storage.count("User")
     }
-    jsonify(classes).status_code = 200
     return jsonify(classes)
