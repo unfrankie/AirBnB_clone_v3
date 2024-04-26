@@ -2,9 +2,9 @@
 """ app """
 
 from flask import Flask
-from api.v1.views import app_views
 from models import storage
 import os
+from api.v1.views import app_views
 
 app = Flask(__name__)
 
