@@ -5,7 +5,7 @@ from flask import jsonify
 from api.v1.views import app_views
 
 
-@app_views.route('/status', methods=['GET'])
+@app_views.route('/status', methods=['GET'], strict_slashes=False)
 def api_status():
     """api status"""
     jsonify({"status": "OK"}).status_code = 200
