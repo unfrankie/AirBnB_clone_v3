@@ -17,6 +17,7 @@ def api_status():
     """api status"""
     return jsonify({"status": "OK"})
 
+
 @app_views.route('/stats')
 def obj_count():
     """Endpoint that retrieves the number of each objects by type"""
