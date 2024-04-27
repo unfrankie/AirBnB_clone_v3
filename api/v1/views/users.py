@@ -39,7 +39,7 @@ def user(user_id):
                 key != 'email' and
                 key != 'created_at' and
                 key != 'updated_at'):
-                setattr(user, key, value)
+                    setattr(user, key, value)
         user.save()
         return jsonify(user.to_dict())
     if request.method == 'DELETE':
