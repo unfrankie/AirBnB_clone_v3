@@ -22,6 +22,7 @@ def users():
         user.save()
         return jsonify(user.to_dict()), 201
 
+
 @app_views.route('/users/<user_id>', methods=['GET', 'PUT', 'DELETE'])
 def user(user_id):
     """ users id """
@@ -34,7 +35,10 @@ def user(user_id):
         if not request.json:
             abort(400, "Not a JSON")
         for key, value in request.json.items():
-            if key != 'id' and key != 'email' and key != 'created_at' and key != 'updated_at':
+            if (key != 'id' and
+                key != 'email' and
+                key != 'created_at' and
+                key != 'updated_at'):
                 setattr(user, key, value)
         user.save()
         return jsonify(user.to_dict())
