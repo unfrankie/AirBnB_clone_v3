@@ -35,11 +35,10 @@ def user(user_id):
         if not request.json:
             abort(400, "Not a JSON")
         for key, value in request.json.items():
-            if (key != 'id' and
-                key != 'email' and
-                key != 'created_at' and
-                key != 'updated_at'):
-                    setattr(user, key, value)
+            if key not in [
+                'id', 'email', 'created_at', 'updated_at'
+            ]:
+                setattr(user, key, value)
         user.save()
         return jsonify(user.to_dict())
     if request.method == 'DELETE':
