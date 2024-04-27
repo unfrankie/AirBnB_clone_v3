@@ -27,7 +27,9 @@ def place_amenities(place_id):
         place.save()
         return jsonify(amenity.to_dict()), 201
 
-@app_views.route('/places/<place_id>/amenities/<amenity_id>', methods=['DELETE'])
+
+@app_views.route('/places/<place_id>/amenities/<amenity_id>',
+                 methods=['DELETE'])
 def delete_place_amenity(place_id, amenity_id):
     """ place_amenity ID """
     place = storage.get("Place", place_id)
