@@ -1,8 +1,13 @@
 #!/usr/bin/python3
 """ Places """
+from flask import Flask, jsonify, abort, request
 from api.v1.views import app_views
-from flask import jsonify, request, abort
-from models import storage, Place, User, City
+from models import storage
+from models.state import State
+from models.city import City
+from models.place import Place
+from models.amenity import Amenity
+from models.user import User
 
 
 @app_views.route('/places', methods=['GET', 'POST'])
@@ -45,3 +50,30 @@ def place(place_id):
         place.delete()
         storage.save()
         return jsonify({})
+
+@app_views.route('/places_search', methods=['POST'])
+def search_places():
+    """ search places """
+    search_params = request.get_json()
+    if search_params is None:
+        abort(400, 'Not a JSON')
+    states = search_params.get('states', [])
+    cities = search_params.get('cities', [])
+    amenities = search_params.get('amenities', [])
+    places = []
+    if not states and not cities:
+        places = storage.all(Place).values()
+    else:
+        for state_id in states:
+            state = storage.get(State, state_id)
+            if state:
+                for city in state.cities:
+                    places.extend(city.places)
+        for city_id in cities:
+            city = storage.get(City, city_id)
+            if city:
+                places.extend(city.places)
+    if amenities:
+        amenities_set = set(amenities)
+        places = [place for place in places if amenities_set.issubset(set(place.amenities))]
+    return jsonify([place.to_dict() for place in places])
