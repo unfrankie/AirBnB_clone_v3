@@ -7,18 +7,18 @@ from models import storage, State
 
 @app_views.route('/states', methods=['GET', 'POST'])
 def states():
-  """ state defenition """
-  if request.method == 'GET':
-    states = [state.to_dict() for state in storage.all("State").values()]
-    return jsonify(states)
-  if request.method == 'POST':
-    if not request.json:
-      abort(400, "Not a JSON")
-    if 'name' not in request.json:
-      abort(400, "Missing name")
-    state = State(**request.json)
-    state.save()
-    return jsonify(state.to_dict()), 201
+    """ state defenition """
+    if request.method == 'GET':
+        states = [state.to_dict() for state in storage.all("State").values()]
+        return jsonify(states)
+    if request.method == 'POST':
+        if not request.json:
+            abort(400, "Not a JSON")
+        if 'name' not in request.json:
+            abort(400, "Missing name")
+        state = State(**request.json)
+        state.save()
+        return jsonify(state.to_dict()), 201
 
 @app_views.route('/states/<state_id>', methods=['GET', 'PUT', 'DELETE'])
 def state(state_id):
