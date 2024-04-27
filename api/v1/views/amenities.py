@@ -4,6 +4,7 @@ from api.v1.views import app_views
 from flask import jsonify, request, abort
 from models import storage, Amenity
 
+
 @app_views.route('/amenities', methods=['GET', 'POST'])
 def amenities():
     """ amenities defenition """
