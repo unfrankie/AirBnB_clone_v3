@@ -24,6 +24,7 @@ def cities_by_state(state_id):
         city.save()
         return jsonify(city.to_dict()), 201
 
+
 @app_views.route('/cities/<city_id>', methods=['GET', 'PUT', 'DELETE'])
 def city(city_id):
     """ City ID """
