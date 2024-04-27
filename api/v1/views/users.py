@@ -4,6 +4,7 @@ from api.v1.views import app_views
 from flask import jsonify, request, abort
 from models import storage, User
 
+
 @app_views.route('/users', methods=['GET', 'POST'])
 def users():
     """ Users defenition """
