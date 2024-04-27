@@ -53,6 +53,7 @@ def place(place_id):
         storage.save()
         return jsonify({})
 
+
 @app_views.route('/places_search', methods=['POST'])
 def search_places():
     """ search places """
@@ -77,5 +78,8 @@ def search_places():
                 places.extend(city.places)
     if amenities:
         amenities_set = set(amenities)
-        places = [place for place in places if amenities_set.issubset(set(place.amenities))]
+        places = [
+            place for place in places
+            if amenities_set.issubset(set(place.amenities))
+        ]
     return jsonify([place.to_dict() for place in places])
