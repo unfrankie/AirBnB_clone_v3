@@ -9,7 +9,10 @@ from models import storage, Amenity
 def amenities():
     """ amenities defenition """
     if request.method == 'GET':
-        amenities = [amenity.to_dict() for amenity in storage.all("Amenity").values()]
+        amenities = [
+            amenity.to_dict()
+            for amenity in storage.all("Amenity").values()
+        ]
         return jsonify(amenities)
     if request.method == 'POST':
         if not request.json:
@@ -19,6 +22,7 @@ def amenities():
         amenity = Amenity(**request.json)
         amenity.save()
         return jsonify(amenity.to_dict()), 201
+
 
 @app_views.route('/amenities/<amenity_id>', methods=['GET', 'PUT', 'DELETE'])
 def amenity(amenity_id):
