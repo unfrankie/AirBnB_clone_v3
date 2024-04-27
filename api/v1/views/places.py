@@ -30,6 +30,7 @@ def places():
         place.save()
         return jsonify(place.to_dict()), 201
 
+
 @app_views.route('/places/<place_id>', methods=['GET', 'PUT', 'DELETE'])
 def place(place_id):
     """ places id """
@@ -42,7 +43,8 @@ def place(place_id):
         if not request.json:
             abort(400, "Not a JSON")
         for key, value in request.json.items():
-            if key not in ['id', 'user_id', 'city_id', 'created_at', 'updated_at']:
+            if key not in {'id', 'user_id', 'city_id',
+                           'created_at', 'updated_at'}:
                 setattr(place, key, value)
         place.save()
         return jsonify(place.to_dict())
