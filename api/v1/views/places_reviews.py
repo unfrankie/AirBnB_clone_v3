@@ -9,7 +9,10 @@ from models import storage, Review, User, Place
 def reviews():
     """ reviews defenition """
     if request.method == 'GET':
-        reviews = [review.to_dict() for review in storage.all("Review").values()]
+        reviews = [
+            review.to_dict()
+            for review in storage.all("Review").values()
+        ]
         return jsonify(reviews)
     if request.method == 'POST':
         if not request.json:
@@ -30,6 +33,7 @@ def reviews():
         review.save()
         return jsonify(review.to_dict()), 201
 
+
 @app_views.route('/reviews/<review_id>', methods=['GET', 'PUT', 'DELETE'])
 def review(review_id):
     """ reviews id """
@@ -42,7 +46,10 @@ def review(review_id):
         if not request.json:
             abort(400, "Not a JSON")
         for key, value in request.json.items():
-            if key not in ['id', 'user_id', 'place_id', 'created_at', 'updated_at']:
+            if key not in [
+                'id', 'user_id', 'place_id',
+                'created_at', 'updated_at'
+            ]:
                 setattr(review, key, value)
         review.save()
         return jsonify(review.to_dict())
