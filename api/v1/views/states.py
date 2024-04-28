@@ -25,7 +25,7 @@ def states():
     return out
 
 
-@app_views.route('/states/<state_id>', methods=['GET', 'PUT', 'DELETE',
+@app_views.route('/states/<state_id>', methods=['GET', 'PUT', 'DELETE'],
                  strict_slashes=False])
 def state(state_id):
     """ State id """
