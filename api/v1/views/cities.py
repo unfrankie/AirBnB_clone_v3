@@ -9,12 +9,13 @@ from models import storage, City, State
                  strict_slashes=False)
 def cities_by_state(state_id):
     """ Cities defenition """
-    state = storage.get(State, state_id)
+    cities = []
+    state = storage.get('State', state_id)
     if not state:
         abort(404)
-    if request.method == 'GET':
-        cities = [city.to_dict() for city in state.cities]
-        return jsonify(cities)
+    for obj in state_obj.cities:
+        city_list.append(obj.to_json())
+    return jsonify(city_list)
     if request.method == 'POST':
         if not request.json:
             abort(400, "Not a JSON")
@@ -31,7 +32,7 @@ def cities_by_state(state_id):
                  strict_slashes=False)
 def city(city_id):
     """ City ID """
-    city = storage.get(City, city_id)
+    city = storage.get('City', str(city_id))
     if not city:
         abort(404)
     if request.method == 'GET':
@@ -45,6 +46,7 @@ def city(city_id):
         city.save()
         return jsonify(city.to_dict())
     if request.method == 'DELETE':
-        city.delete()
+        city = storage.get('City', str(city_id))
+        storage.delete(city)
         storage.save()
         return jsonify({})
