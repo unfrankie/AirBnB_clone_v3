@@ -1,40 +1,41 @@
 #!/usr/bin/python3
 """ Places """
-from flask import Flask, jsonify, abort, request
-from api.v1.views import app_views
-from models import storage
-from models.state import State
-from models.city import City
+from flask import jsonify, abort, request
+from api.v1.views import app_views, storage
 from models.place import Place
-from models.amenity import Amenity
-from models.user import User
 
 
-@app_views.route('/places', methods=['GET', 'POST'])
-def places():
+@app_views.route('/cities/<city_id>/places', methods=['GET', 'POST'],
+                strict_slashes=False)
+def places(city_id):
     """ Places defenition """
+    places = []
+    json = request.get_json(silent=True)
     if request.method == 'GET':
-        places = [place.to_dict() for place in storage.all("Place").values()]
-        return jsonify(places)
+        city = storage.get("City", str(city_id))
+    for obj in city.places:
+        places.append(obj.to_dict())
+    return jsonify(places)
     if request.method == 'POST':
-        if not request.json:
-            abort(400, "Not a JSON")
-        if 'user_id' not in request.json:
-            abort(400, "Missing user_id")
-        if 'name' not in request.json:
-            abort(400, "Missing name")
-        user_id = request.json['user_id']
-        if not storage.get("User", user_id):
+        if json is None:
+            abort(400, 'Not a JSON')
+        if not storage.get("User", json["user_id"]):
             abort(404)
-        place = Place(**request.json)
-        place.save()
-        return jsonify(place.to_dict()), 201
+        if not storage.get("City", city_id):
+            abort(404)
+        if "user_id" not in json:
+            abort(400, 'Missing user_id')
+        if "name" not in json:
+            abort(400, 'Missing name')
 
 
 @app_views.route('/places/<place_id>', methods=['GET', 'PUT', 'DELETE'])
 def place(place_id):
     """ places id """
-    place = storage.get("Place", place_id)
+    json = request.get_json(silent=True)
+    place = storage.get("Place", str(place_id))
+    if json is None:
+        abort(400, 'Not a JSON')
     if not place:
         abort(404)
     if request.method == 'GET':
@@ -49,7 +50,7 @@ def place(place_id):
         place.save()
         return jsonify(place.to_dict())
     if request.method == 'DELETE':
-        place.delete()
+        storage.delete(place)
         storage.save()
         return jsonify({})
 
