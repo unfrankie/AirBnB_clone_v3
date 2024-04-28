@@ -5,9 +5,9 @@ from flask import jsonify, request, abort
 from models import storage, User
 
 
-@app_views.route('/users', methods=['GET', 'POST'])
+@app_views.route('/users', methods=['GET', 'POST'], strict_slashes=False)
 def users():
-    """ Users defenition """
+    """ Users definition """
     if request.method == 'GET':
         users = [user.to_dict() for user in storage.all("User").values()]
         return jsonify(users)
@@ -23,9 +23,10 @@ def users():
         return jsonify(user.to_dict()), 201
 
 
-@app_views.route('/users/<user_id>', methods=['GET', 'PUT', 'DELETE'])
+@app_views.route('/users/<user_id>', methods=['GET', 'PUT', 'DELETE'],
+                 strict_slashes=False)
 def user(user_id):
-    """ users id """
+    """ Users ID """
     user = storage.get("User", user_id)
     if not user:
         abort(404)
@@ -35,9 +36,7 @@ def user(user_id):
         if not request.json:
             abort(400, "Not a JSON")
         for key, value in request.json.items():
-            if key not in [
-                'id', 'email', 'created_at', 'updated_at'
-            ]:
+            if key not in ['id', 'email', 'created_at', 'updated_at']:
                 setattr(user, key, value)
         user.save()
         return jsonify(user.to_dict())
