@@ -10,6 +10,8 @@ def states():
     """ state defenition """
     if request.method == 'GET':
         states = [state.to_dict() for state in storage.all("State").values()]
+        if not states:
+            return jsonify([])
         return jsonify(states)
     if request.method == 'POST':
         if not request.json:
@@ -19,7 +21,6 @@ def states():
         state = State(**request.json)
         state.save()
         return jsonify(state.to_dict()), 201
-    return jsonify([])
 
 
 @app_views.route('/states/<state_id>', methods=['GET', 'PUT', 'DELETE'])
