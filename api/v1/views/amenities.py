@@ -42,7 +42,6 @@ def amenity(amenity_id):
         amenity.save()
         return jsonify(amenity.to_dict())
     if request.method == 'DELETE':
-        amenity = storage.get("Amenity", str(amenity_id))
         storage.delete(amenity)
         storage.save()
         return jsonify({})
