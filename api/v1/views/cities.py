@@ -5,10 +5,11 @@ from flask import Flask, jsonify, request, abort
 from models import storage, City, State
 
 
-@app_views.route('/states/<state_id>/cities', methods=['GET', 'POST'])
+@app_views.route('/states/<state_id>/cities', methods=['GET', 'POST'],
+                 strict_slashes=False)
 def cities_by_state(state_id):
     """ Cities defenition """
-    state = storage.get("State", state_id)
+    state = storage.get(State, state_id)
     if not state:
         abort(404)
     if request.method == 'GET':
@@ -19,16 +20,18 @@ def cities_by_state(state_id):
             abort(400, "Not a JSON")
         if 'name' not in request.json:
             abort(400, "Missing name")
-        city = City(**request.json)
-        city.state_id = state_id
-        city.save()
-        return jsonify(city.to_dict()), 201
+        json_data = request.get_json()
+        json_data['state_id'] = state_id
+        new_city = City(**json_data)
+        new_city.save()
+        return jsonify(new_city.to_dict()), 201
 
 
-@app_views.route('/cities/<city_id>', methods=['GET', 'PUT', 'DELETE'])
+@app_views.route('/cities/<city_id>', methods=['GET', 'PUT', 'DELETE'],
+                 strict_slashes=False)
 def city(city_id):
     """ City ID """
-    city = storage.get("City", city_id)
+    city = storage.get(City, city_id)
     if not city:
         abort(404)
     if request.method == 'GET':
