@@ -19,6 +19,7 @@ def states():
         state = State(**request.json)
         state.save()
         return jsonify(state.to_dict()), 201
+    return jsonify([])
 
 
 @app_views.route('/states/<state_id>', methods=['GET', 'PUT', 'DELETE'])
