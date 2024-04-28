@@ -8,21 +8,21 @@ from models.state import State
 @app_views.route('/states', methods=['GET', 'POST'], strict_slashes=False)
 def states():
     """ state defenition """
-    states = []
-    state = storage.all("State")
-    for obj in state.values():
-        states.append(obj.to_json())
-    return jsonify(states)
-    json = request.get_json(silent=True)
-    if json is None:
-        abort(400, 'Not a JSON')
-    if "name" not in json:
-        abort(400, 'Missing name')
-    new = State(**_json)
-    new.save()
-    out = jsonify(new_state.to_json())
-    out.status_code = 201
-    return out
+    if request.method == 'GET':
+        states = []
+        state_objs = storage.all(State).values()
+        for obj in state_objs:
+            states.append(obj.to_dict())
+        return jsonify(states)
+    elif request.method == 'POST':
+        json_data = request.get_json(silent=True)
+        if not json_data:
+            return jsonify({"error": "Not a JSON"}), 400
+        if 'name' not in json_data:
+            return jsonify({"error": "Missing name"}), 400
+        new_state = State(**json_data)
+        new_state.save()
+        return jsonify(new_state.to_dict()), 201
 
 
 @app_views.route('/states/<state_id>', methods=['GET', 'PUT', 'DELETE'],
