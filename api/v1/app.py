@@ -17,6 +17,7 @@ def teardown_db(exception):
     """" Teardown Database"""
     storage.close()
 
+
 @app.errorhandler(404)
 def not_found(exception):
     """ Not Found 404 """
