@@ -61,37 +61,30 @@ def place(place_id):
 @app_views.route('/places_search', methods=['POST'],
                  strict_slashes=False)
 def search_places():
-    """
-    Search
-    """
-    if request.get_json() is None:
-        abort(400, description="Not a JSON")
+    """ search places """
     search_params = request.get_json()
+    if search_params is None:
+        abort(400, 'Not a JSON')
     states = search_params.get('states', [])
     cities = search_params.get('cities', [])
     amenities = search_params.get('amenities', [])
     places = []
-    if not states and not cities and not amenities:
+    if not states and not cities:
         places = storage.all(Place).values()
     else:
-        if states:
-            for state_id in states:
-                state = storage.get(State, state_id)
-                if state:
-                    for city in state.cities:
-                        places.extend(city.places)
-        if cities:
-            for city_id in cities:
-                city = storage.get(City, city_id)
-                if city:
+        for state_id in states:
+            state = storage.get(State, state_id)
+            if state:
+                for city in state.cities:
                     places.extend(city.places)
-        if amenities:
-            amenities_obj = [storage.get(Amenity, a_id) for a_id in amenities]
-            places = [
-                place for place in places
-                if all(am in place.amenities for am in amenities_obj)
-            ]
-    places_dicts = [place.to_dict() for place in places]
-    for place_dict in places_dicts:
-        place_dict.pop('amenities', None)
-    return jsonify(places_dicts)
+        for city_id in cities:
+            city = storage.get(City, city_id)
+            if city:
+                places.extend(city.places)
+    if amenities:
+        amenities_set = set(amenities)
+        places = [
+            place for place in places
+            if amenities_set.issubset(set(place.amenities))
+        ]
+    return jsonify([place.to_dict() for place in places])
