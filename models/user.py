@@ -6,11 +6,12 @@ from os import getenv
 import sqlalchemy
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
+storage_t = getenv("HBNB_TYPE_STORAGE")
 
 
 class User(BaseModel, Base):
     """Representation of a user """
-    if models.storage_t == 'db':
+    if storage_t == 'db':
         __tablename__ = 'users'
         email = Column(String(128), nullable=False)
         password = Column(String(128), nullable=False)
@@ -32,6 +33,6 @@ class User(BaseModel, Base):
 
     def to_dict(self, **kwargs):
         """returns a dictionary representation of the instance"""
-        if models.storage_t == 'db' and 'password' not in kwargs:
+        if storage_t == 'db' and 'password' not in kwargs:
             kwargs['password'] = ''
         return super().to_dict(**kwargs)
