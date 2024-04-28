@@ -11,6 +11,8 @@ from sqlalchemy import Column, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 import uuid
 
+storage_t = getenv("HBNB_TYPE_STORAGE")
+
 time = "%Y-%m-%dT%H:%M:%S.%f"
 
 if models.storage_t == "db":
