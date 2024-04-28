@@ -5,7 +5,7 @@ from flask import jsonify, request, abort
 from models import storage, Amenity
 
 
-@app_views.route('/amenities', methods=['GET', 'POST'])
+@app_views.route('/amenities', methods=['GET', 'POST'], strict_slashes=False)
 def amenities():
     """ amenities defenition """
     if request.method == 'GET':
@@ -24,7 +24,8 @@ def amenities():
         return jsonify(amenity.to_dict()), 201
 
 
-@app_views.route('/amenities/<amenity_id>', methods=['GET', 'PUT', 'DELETE'])
+@app_views.route('/amenities/<amenity_id>', methods=['GET', 'PUT', 'DELETE'],
+                 strict_slashes=False)
 def amenity(amenity_id):
     """ amenities definition """
     amenity = storage.get("Amenity", amenity_id)
