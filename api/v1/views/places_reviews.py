@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 """ reviews """
-from api.v1.views import app_views
-from flask import jsonify, request, abort
-from models import storage, Review, User, Place
+from flask import jsonify, abort, request
+from api.v1.views import app_views, storage
+from models.review import Review
 
 
 @app_views.route('/places/<place_id>/reviews', methods=['GET', 'POST'],
