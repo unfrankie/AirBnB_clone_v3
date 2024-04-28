@@ -8,8 +8,8 @@ from models import storage, State
 @app_views.route('/states', methods=['GET', 'POST'], strict_slashes=False)
 def states():
     """ state defenition """
+    states = []
     if request.method == 'GET':
-        states = []
         state_objs = storage.all(State).values()
         for obj in state_objs:
             states.append(obj.to_dict())
