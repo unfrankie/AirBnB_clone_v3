@@ -6,7 +6,7 @@ from models.place import Place
 
 
 @app_views.route('/cities/<city_id>/places', methods=['GET', 'POST'],
-                strict_slashes=False)
+                 strict_slashes=False)
 def places(city_id):
     """ Places defenition """
     places = []
@@ -29,7 +29,8 @@ def places(city_id):
             abort(400, 'Missing name')
 
 
-@app_views.route('/places/<place_id>', methods=['GET', 'PUT', 'DELETE'])
+@app_views.route('/places/<place_id>', methods=['GET', 'PUT', 'DELETE'],
+                strict_slashes=False)
 def place(place_id):
     """ places id """
     json = request.get_json(silent=True)
@@ -55,7 +56,8 @@ def place(place_id):
         return jsonify({})
 
 
-@app_views.route('/places_search', methods=['POST'])
+@app_views.route('/places_search', methods=['POST'],
+                strict_slashes=False)
 def search_places():
     """ search places """
     search_params = request.get_json()
