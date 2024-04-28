@@ -46,7 +46,6 @@ def city(city_id):
         city.save()
         return jsonify(city.to_dict())
     if request.method == 'DELETE':
-        city = storage.get('City', str(city_id))
         storage.delete(city)
         storage.save()
         return jsonify({})
