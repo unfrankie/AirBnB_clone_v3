@@ -1,25 +1,37 @@
 #!/usr/bin/python3
 """ places/amenities """
-from api.v1.views import app_views
-from flask import jsonify, request, abort
-from models import storage, Place, Amenity
+from flask import jsonify, abort
+from os import getenv
+from api.v1.views import app_views, storage
 
 
-@app_views.route('/places/<place_id>/amenities', methods=['GET', 'POST'])
+@app_views.route('/places/<place_id>/amenities', methods=['GET', 'POST'],
+                 strict_slashes=False)
 def place_amenities(place_id):
     """ place_amenity defenition """
     place = storage.get("Place", place_id)
+    amenities_l = []
     if not place:
         abort(404)
     if request.method == 'GET':
-        amenities = [amenity.to_dict() for amenity in place.amenities]
-        return jsonify(amenities)
+        for obj in amenities_l.amenities:
+            amenities_l.append(obj.to_dict())
+        return jsonify(amenities_l)
+
+
+@app_views.route("/places/<place_id>/amenities/<amenity_id>",
+                 methods=["POST"],
+                 strict_slashes=False)
+def amenity_place(place_id, amenity_id):
+    """ Post """
+    place = storage.get("Place", str(place_id))
+    amenity = storage.get("Amenity", str(amenity_id))
     if request.method == 'POST':
-        if 'amenity_id' not in request.json:
-            abort(400, "Missing amenity_id")
-        amenity_id = request.json['amenity_id']
-        amenity = storage.get("Amenity", amenity_id)
-        if not amenity:
+        for obj in place.amenities:
+            if str(obj.id) == amenity_id:
+                result = obj
+                break
+        if not amenity or not place:
             abort(404)
         if amenity in place.amenities:
             return jsonify(amenity.to_dict()), 200
@@ -29,7 +41,7 @@ def place_amenities(place_id):
 
 
 @app_views.route('/places/<place_id>/amenities/<amenity_id>',
-                 methods=['DELETE'])
+                 methods=['DELETE'], strict_slashes=False)
 def delete_place_amenity(place_id, amenity_id):
     """ place_amenity ID """
     place = storage.get("Place", place_id)
