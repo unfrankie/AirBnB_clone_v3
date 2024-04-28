@@ -13,9 +13,9 @@ def cities_by_state(state_id):
     state = storage.get('State', state_id)
     if not state:
         abort(404)
-    for obj in state_obj.cities:
-        city_list.append(obj.to_json())
-    return jsonify(city_list)
+    for obj in state.cities:
+        cities.append(obj.to_dict())
+    return jsonify(cities)
     if request.method == 'POST':
         if not request.json:
             abort(400, "Not a JSON")
