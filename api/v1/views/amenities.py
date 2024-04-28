@@ -1,18 +1,18 @@
 #!/usr/bin/python3
 """ Amenities """
-from api.v1.views import app_views
 from flask import jsonify, request, abort
-from models import storage, Amenity
+from api.v1.views import app_views, storage
+from models.amenity import Amenity
 
 
 @app_views.route('/amenities', methods=['GET', 'POST'], strict_slashes=False)
 def amenities():
     """ amenities defenition """
     if request.method == 'GET':
-        amenities = [
-            amenity.to_dict()
-            for amenity in storage.all("Amenity").values()
-        ]
+        amenities = []
+        amenity = storage.all("Amenity")
+        for obj in amenity.values():
+            amenities.append(obj.to_dict())
         return jsonify(amenities)
     if request.method == 'POST':
         if not request.json:
@@ -28,7 +28,7 @@ def amenities():
                  strict_slashes=False)
 def amenity(amenity_id):
     """ amenities definition """
-    amenity = storage.get("Amenity", amenity_id)
+    amenity = storage.get("Amenity", str(amenity_id))
     if not amenity:
         abort(404)
     if request.method == 'GET':
@@ -42,6 +42,7 @@ def amenity(amenity_id):
         amenity.save()
         return jsonify(amenity.to_dict())
     if request.method == 'DELETE':
-        amenity.delete()
+        amenity = storage.get("Amenity", str(amenity_id))
+        storage.delete(amenity)
         storage.save()
         return jsonify({})
