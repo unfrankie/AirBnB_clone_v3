@@ -30,7 +30,7 @@ def places(city_id):
 
 
 @app_views.route('/places/<place_id>', methods=['GET', 'PUT', 'DELETE'],
-                strict_slashes=False)
+                 strict_slashes=False)
 def place(place_id):
     """ places id """
     json = request.get_json(silent=True)
@@ -57,7 +57,7 @@ def place(place_id):
 
 
 @app_views.route('/places_search', methods=['POST'],
-                strict_slashes=False)
+                 strict_slashes=False)
 def search_places():
     """ search places """
     search_params = request.get_json()
