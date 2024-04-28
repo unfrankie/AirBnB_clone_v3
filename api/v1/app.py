@@ -2,6 +2,7 @@
 """ app """
 
 from flask import Flask
+from flask_cors import CORS
 from models import storage
 import os
 from api.v1.views import app_views
