@@ -8,8 +8,8 @@ from models.amenity import Amenity
 @app_views.route('/amenities', methods=['GET', 'POST'], strict_slashes=False)
 def amenities():
     """ amenities defenition """
+    amenities = []
     if request.method == 'GET':
-        amenities = []
         amenity = storage.all("Amenity")
         for obj in amenity.values():
             amenities.append(obj.to_dict())
