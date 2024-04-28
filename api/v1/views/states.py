@@ -9,23 +9,27 @@ from models import storage, State
 def states():
     """ state defenition """
     if request.method == 'GET':
-        states = [state.to_dict() for state in storage.all("State").values()]
+        states = []
+        state_objs = storage.all(State).values()
+        for obj in state_objs:
+            states.append(obj.to_dict())
         return jsonify(states)
-
-    if request.method == 'POST':
-        if not request.json:
-            abort(400, "Not a JSON")
-        if 'name' not in request.json:
-            abort(400, "Missing name")
-        state = State(**request.json)
-        state.save()
-        return jsonify(state.to_dict()), 201
+    elif request.method == 'POST':
+        json_data = request.get_json(silent=True)
+        if not json_data:
+            return jsonify({"error": "Not a JSON"}), 400
+        if 'name' not in json_data:
+            return jsonify({"error": "Missing name"}), 400
+        new_state = State(**json_data)
+        new_state.save()
+        return jsonify(new_state.to_dict()), 201
 
 
 @app_views.route('/states/<state_id>', methods=['GET', 'PUT', 'DELETE'],
                  strict_slashes=False)
 def state(state_id):
-    state = storage.get("State", state_id)
+    """ State id """
+    state = storage.get("State", str(state_id))
     if not state:
         abort(404)
     if request.method == 'GET':
@@ -39,6 +43,9 @@ def state(state_id):
         state.save()
         return jsonify(state.to_dict())
     if request.method == 'DELETE':
+        state = storage.get("State", str(state_id))
+        if state is None:
+            abort(404)
         storage.delete(state)
         storage.save()
         return jsonify({})
