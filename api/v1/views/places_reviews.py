@@ -5,39 +5,41 @@ from flask import jsonify, request, abort
 from models import storage, Review, User, Place
 
 
-@app_views.route('/reviews', methods=['GET', 'POST'])
-def reviews():
+@app_views.route('/places/<place_id>/reviews', methods=['GET', 'POST'],
+                 strict_slashes=False)
+def reviews(place_id):
     """ reviews defenition """
+    reviews_l = []
+    place = storage.get("Place", str(place_id))
+    if place is None:
+        abort(404)
     if request.method == 'GET':
-        reviews = [
-            review.to_dict()
-            for review in storage.all("Review").values()
-        ]
-        return jsonify(reviews)
+        for obj in place.reviews:
+            reviews_l.append(obj.to_dict())
+        return jsonify(reviews_l)
     if request.method == 'POST':
-        if not request.json:
-            abort(400, "Not a JSON")
-        if 'user_id' not in request.json:
-            abort(400, "Missing user_id")
-        if 'place_id' not in request.json:
-            abort(400, "Missing place_id")
-        if 'text' not in request.json:
-            abort(400, "Missing text")
-        user_id = request.json['user_id']
-        place_id = request.json['place_id']
-        if not storage.get("User", user_id):
-            abort(404)
+        json = request.get_json(silent=True)
+        if json is None:
+            abort(400, 'Not a JSON')
         if not storage.get("Place", place_id):
             abort(404)
-        review = Review(**request.json)
-        review.save()
-        return jsonify(review.to_dict()), 201
+        if not storage.get("User", json["user_id"]):
+            abort(404)
+        if "user_id" not in json:
+            abort(400, 'Missing user_id')
+        if "text" not in json:
+            abort(400, 'Missing text')
+        json["place_id"] = place_id
+        new = Review(**json)
+        new.save()
+        return jsonify(new.to_dict()), 201
 
 
-@app_views.route('/reviews/<review_id>', methods=['GET', 'PUT', 'DELETE'])
+@app_views.route('/reviews/<review_id>', methods=['GET', 'PUT', 'DELETE'],
+                 strict_slashes=False)
 def review(review_id):
     """ reviews id """
-    review = storage.get("Review", review_id)
+    review = storage.get("Review", str(review_id))
     if not review:
         abort(404)
     if request.method == 'GET':
@@ -54,6 +56,8 @@ def review(review_id):
         review.save()
         return jsonify(review.to_dict())
     if request.method == 'DELETE':
-        review.delete()
+        if fetched_obj is None:
+            abort(404)
+        storage.delete(review)
         storage.save()
         return jsonify({})
