@@ -43,7 +43,6 @@ def state(state_id):
         state.save()
         return jsonify(state.to_dict())
     if request.method == 'DELETE':
-        state = storage.get("State", str(state_id))
         if state is None:
             abort(404)
         storage.delete(state)
