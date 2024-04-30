@@ -20,13 +20,12 @@ def states():
             return jsonify({"error": "Not a JSON"}), 400
         if 'name' not in json_data:
             return jsonify({"error": "Missing name"}), 400
-        new_state = State(name=json_data['name'])
+        new_state = State(**json_data)
         new_state.save()
         return jsonify(new_state.to_dict()), 201
 
 
-@app_views.route('/states/<state_id>',
-                 methods=['GET', 'PUT', 'DELETE'],
+@app_views.route('/states/<state_id>', methods=['GET', 'PUT', 'DELETE'],
                  strict_slashes=False)
 def state(state_id):
     """ State id """
@@ -36,14 +35,19 @@ def state(state_id):
     if request.method == 'GET':
         return jsonify(state.to_dict())
     if request.method == 'PUT':
-        if request.json is None:
+        if not request.json:
             abort(400, "Not a JSON")
+        json_data = request.get_json()
+        if 'name' not in json_data:
+            return jsonify({"error": "Missing name"}), 400
         for key, value in request.json.items():
             if key not in ['id', 'created_at', 'updated_at']:
                 setattr(state, key, value)
         state.save()
         return jsonify(state.to_dict())
     if request.method == 'DELETE':
+        if state is None:
+            abort(404)
         storage.delete(state)
         storage.save()
         return jsonify({})
