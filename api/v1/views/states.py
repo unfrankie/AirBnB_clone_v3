@@ -11,8 +11,7 @@ def states():
     states = []
     if request.method == 'GET':
         state_objs = storage.all(State).values()
-        for obj in state_objs:
-            states.append(obj.to_dict())
+        states = [obj.to_dict() for obj in state_objs]
         return jsonify(states)
     elif request.method == 'POST':
         json_data = request.get_json(silent=True)
@@ -47,4 +46,4 @@ def state(state_id):
             abort(404)
         storage.delete(state)
         storage.save()
-        return jsonify({})
+        return jsonify({}), 200
