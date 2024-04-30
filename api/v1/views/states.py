@@ -28,22 +28,22 @@ def states():
                  strict_slashes=False)
 def state(state_id):
     """ State id """
-    state = storage.get("State", str(state_id))
+    state = storage.get(State, state_id)
     if not state:
         abort(404)
+    
     if request.method == 'GET':
         return jsonify(state.to_dict())
-    if request.method == 'PUT':
-        if not request.json:
+    elif request.method == 'PUT':
+        json_data = request.get_json()
+        if not json_data:
             abort(400, "Not a JSON")
-        for key, value in request.json.items():
+        for key, value in json_data.items():
             if key not in ['id', 'created_at', 'updated_at']:
                 setattr(state, key, value)
         state.save()
         return jsonify(state.to_dict())
-    if request.method == 'DELETE':
-        if state is None:
-            abort(404)
+    elif request.method == 'DELETE':
         storage.delete(state)
         storage.save()
         return jsonify({}), 200
