@@ -11,7 +11,8 @@ def states():
     states = []
     if request.method == 'GET':
         state_objs = storage.all(State).values()
-        states = [obj.to_dict() for obj in state_objs]
+        for obj in state_objs:
+            states.append(obj.to_dict())
         return jsonify(states)
     elif request.method == 'POST':
         json_data = request.get_json(silent=True)
@@ -19,31 +20,30 @@ def states():
             return jsonify({"error": "Not a JSON"}), 400
         if 'name' not in json_data:
             return jsonify({"error": "Missing name"}), 400
-        new_state = State(**json_data)
+        new_state = State(name=json_data['name'])
         new_state.save()
         return jsonify(new_state.to_dict()), 201
 
 
-@app_views.route('/states/<state_id>', methods=['GET', 'PUT', 'DELETE'],
+@app_views.route('/states/<state_id>',
+                 methods=['GET', 'PUT', 'DELETE'],
                  strict_slashes=False)
 def state(state_id):
     """ State id """
-    state = storage.get(State, state_id)
+    state = storage.get("State", str(state_id))
     if not state:
         abort(404)
-    
     if request.method == 'GET':
         return jsonify(state.to_dict())
-    elif request.method == 'PUT':
-        json_data = request.get_json()
-        if not json_data:
+    if request.method == 'PUT':
+        if request.json is None:
             abort(400, "Not a JSON")
-        for key, value in json_data.items():
+        for key, value in request.json.items():
             if key not in ['id', 'created_at', 'updated_at']:
                 setattr(state, key, value)
         state.save()
         return jsonify(state.to_dict())
-    elif request.method == 'DELETE':
+    if request.method == 'DELETE':
         storage.delete(state)
         storage.save()
-        return jsonify({}), 200
+        return jsonify({})
